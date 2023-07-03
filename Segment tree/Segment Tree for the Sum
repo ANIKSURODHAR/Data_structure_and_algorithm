@@ -1,0 +1,108 @@
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const long long int N=1e7+9;
+
+long long int totall[N*4];
+
+long long int arr[N+1];
+
+void create(long long int node,long long int base ,long long int last){
+
+  if(base==last){
+
+    totall[node]=arr[base];
+
+    return;
+  }
+
+ long long int left=2*node, right=(2*node)+1;
+
+ long long int mid=(base+last)/2;
+
+ create(left , base , mid);
+
+ create(right , mid+1 , last);
+
+ totall[node]=totall[left]+totall[right];
+
+}
+
+long long int query(long long int node,long long int base ,long long int last,long long int l ,long long int r){
+
+  if(r<base || last<l){
+
+    return 0;
+  }
+
+  if(base>=l && last<=r)
+
+     return totall[node];
+
+  long long int left=2*node, right=(2*node)+1;
+
+  long long int mid=(base+last)/2;
+
+   return query(left, base , mid,l , r)+query(right  ,mid+1 ,  last, l , r);
+
+}
+
+ void update(long long int node,long long int base ,long long int last,long long int index ,long long int up_num){
+
+    if(base>index || last<index){
+
+    return ;
+  }
+
+  if(base==last && base==index){
+
+    totall[node]=up_num;
+
+    return;
+  }
+
+ long long int left=2*node, right=(2*node)+1;
+
+ long long int mid=(base+last)/2;
+
+ update( left,  base , mid, index , up_num);
+
+ update( right,  mid+1 , last, index , up_num);
+
+ totall[node]=totall[left]+totall[right];
+ }
+
+
+int main(){
+
+ long long int n , m;
+
+ cin>>n>>m;
+
+ for(int i=1;i<=n;i++){
+
+    cin>>arr[i];
+ }
+
+ create(1,1,n);
+
+
+ while(m--){
+
+    long long int a, l, r;
+
+    cin>>a>>l>>r;
+
+    if(a==1){
+
+      update(1, 1 , n, l+1 , r);
+    }
+    else if(a==2){
+
+        cout<<1ll*query(1,1,n,l+1,r)<<"\n";
+    }
+ }
+}
+
