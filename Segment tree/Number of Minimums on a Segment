@@ -1,0 +1,149 @@
+
+#include <iostream>
+
+ using namespace std;
+
+ const  int N=1e5+9 , inf=1e9+9;
+
+ struct node{
+
+ int mn, count;
+
+ };
+
+int arr[N+1];
+
+node totall[N*4];
+
+node merge1(node l , node r){
+
+ node ans;
+
+ ans.mn=min(l.mn,r.mn);
+
+ ans.count=0;
+
+ if(l.mn==ans.mn){
+
+    ans.count+=l.count;
+ }
+
+  if(r.mn==ans.mn){
+
+    ans.count+=r.count;
+ }
+
+ return ans;
+ }
+
+ void build( int node,  int start,  int last){
+
+  if(start==last){
+
+    totall[node].mn=arr[start];
+
+    totall[node].count=1;
+
+    return;
+  }
+
+  int left=2*node , right=(2*node)+1, mid=(start+last)/2;
+
+  build(left, start , mid);
+
+  build(right , mid+1 ,last);
+
+  totall[node]=merge1(totall[left],totall[right]);
+
+ }
+
+
+
+ node query1( int node,  int start,int last, int l,int r){
+
+   if(r<start || l>last) return {inf,1};
+
+
+  if(l<=start && last<=r)
+
+    return totall[node];
+
+
+  int left=2*node , right=(2*node)+1 ,mid=(start+last)/2;
+
+  return merge1(query1(left , start , mid , l ,r) , query1(right , mid+1 , last , l , r));
+
+ }
+
+
+
+ void update( int node, int start,  int last,int index,  int up_num){
+
+  if(  start>index || last<index  )
+
+      return ;
+
+  if(start==last && start == index){
+
+    totall[node].mn=up_num;
+
+    totall[node].count=1;
+
+    return;
+  }
+
+
+   int left=2*node , right=(2*node)+1;
+
+   int mid=(start+last)/2;
+
+  update(left, start , mid ,index , up_num);
+
+  update(right , mid+1 ,last ,index , up_num);
+
+  totall[node]=merge1(totall[left],totall[right]);
+
+ }
+
+
+ int main(){
+
+ ios_base::sync_with_stdio(0);
+ cin.tie(0);
+
+
+ int n , m;
+
+ cin>>n>>m;
+
+ for(int i=1;i<=n;i++){
+
+    cin>>arr[i];
+ }
+
+ build(1,1,n);
+
+
+ while(m--){
+
+     int a, l, r;
+
+   cin>>a>>l>>r;
+
+    if(a==1){
+
+      update(1, 1 , n, l+1 , r);
+    }
+    else if(a==2){
+
+       node ans;
+       ans=query1(1,1,n,l+1,r);
+
+
+      cout<<ans.mn<<" "<<ans.count"\n";
+
+    }
+ }
+
+
+ }
